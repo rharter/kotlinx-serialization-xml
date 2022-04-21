@@ -38,7 +38,7 @@ internal class XmlLexer(private val source: String) {
     var start = position
     var namespace: String? = null
     while (true) {
-      when (next()) {
+      when (val c = next()) {
         null -> throw IllegalArgumentException("Unexpected end of file")
         ':' -> {
           namespace = source.substring(start, position - 1)

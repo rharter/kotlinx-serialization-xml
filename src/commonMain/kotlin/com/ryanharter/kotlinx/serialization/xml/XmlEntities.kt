@@ -1,27 +1,29 @@
 package com.ryanharter.kotlinx.serialization.xml
 
-public sealed interface XmlEntity
-public sealed interface XmlContentEntity : XmlEntity
+public sealed interface XmlEntity {
+  public sealed interface ContentEntity : XmlEntity
 
-public data class XmlDocument(
-  public val root: XmlElement
-) : XmlEntity
+  public data class Document(
+    public val root: Element
+  ) : XmlEntity
 
-public data class XmlValue(
-  public val value: String
-) : XmlContentEntity
+  public data class Value(
+    public val value: String
+  ) : ContentEntity
 
-public data class XmlElement(
-  public val name: String,
-  public val attributes: List<XmlAttribute> = emptyList(),
-  public val content: List<XmlContentEntity> = emptyList(),
-) : XmlContentEntity
+  public data class Element(
+    public val name: String,
+    public val namespace: String?,
+    public val attributes: List<Attribute> = emptyList(),
+    public val content: List<ContentEntity> = emptyList(),
+  ) : ContentEntity
 
-public data class XmlAttribute(
-  val name: String,
-  val value: String,
-) : XmlEntity
+  public data class Attribute(
+    val name: String,
+    val value: String,
+  ) : XmlEntity
 
-public data class XmlComment(
-  val value: String,
-) : XmlContentEntity
+  public data class Comment(
+    val value: String,
+  ) : ContentEntity
+}

@@ -1,7 +1,6 @@
 package com.ryanharter.kotlinx.serialization.xml.internal
 
 import com.ryanharter.kotlinx.serialization.xml.Xml
-import com.ryanharter.kotlinx.serialization.xml.XmlAttribute
 import com.ryanharter.kotlinx.serialization.xml.XmlContent
 import com.ryanharter.kotlinx.serialization.xml.XmlEncoder
 import com.ryanharter.kotlinx.serialization.xml.XmlEntity
@@ -34,7 +33,7 @@ internal class XmlElementEncoder(
 ) : Encoder, CompositeEncoder, XmlChild {
   override val serializersModule: SerializersModule = encoder.xml.serializersModule
 
-  private val attributes = mutableListOf<XmlAttribute>()
+  private val attributes = mutableListOf<XmlEntity.Attribute>()
   private val children = mutableListOf<XmlChild>()
 
   override fun write(output: StringBuilder) {
@@ -130,7 +129,7 @@ internal class XmlElementEncoder(
     if (descriptor.getElementAnnotations(index).any { it is XmlContent }) {
       children.add(XmlContentValue(value, level + 1))
     } else {
-      attributes.add(XmlAttribute(descriptor.getElementName(index), value))
+      attributes.add(XmlEntity.Attribute(descriptor.getElementName(index), value))
     }
   }
 

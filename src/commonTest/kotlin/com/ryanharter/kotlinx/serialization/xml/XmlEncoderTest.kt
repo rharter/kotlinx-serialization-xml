@@ -27,7 +27,7 @@ class XmlEncoderTest {
 
   private val default = Xml.Default
 
-  @Test fun element() {
+  @Test fun basic() {
     val xml = default.encodeToString(Greeting(
       from = "Ryan",
       to = "Bill",

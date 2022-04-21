@@ -6,6 +6,7 @@ import com.ryanharter.kotlinx.serialization.xml.XmlContent
 import com.ryanharter.kotlinx.serialization.xml.XmlDecoder
 import com.ryanharter.kotlinx.serialization.xml.XmlEntity
 import com.ryanharter.kotlinx.serialization.xml.XmlName
+import com.ryanharter.kotlinx.serialization.xml.XmlNamespace
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -25,11 +26,18 @@ internal class XmlElementDecoder(
   private var lastTextToken: XmlLexer.Token.Text? = null
 
   private val namespaceMap = parentNamespaceMap.toMutableMap()
+
+  private data class Name(val name: String, val namespaceUri: String?)
   private val elementNames = (0 until descriptor.elementsCount).map { i ->
-    val xmlName = descriptor.getElementAnnotations(i)
+    val name = descriptor.getElementAnnotations(i)
       .filterIsInstance<XmlName>()
       .firstOrNull()
-    xmlName ?: XmlName(descriptor.getElementName(i), "")
+      ?.name ?: descriptor.getElementName(i)
+    val namespace = descriptor.getElementAnnotations(i)
+      .filterIsInstance<XmlNamespace>()
+      .firstOrNull()
+      ?.uri
+    Name(name, namespace)
   }
 
   override val serializersModule: SerializersModule = decoder.xml.serializersModule
@@ -45,9 +53,9 @@ internal class XmlElementDecoder(
   private fun getElementIndex(name: String, namespace: String?): Int {
     val namespaceUri = namespace?.let {
       namespaceMap[it] ?: throw UndefinedNamespaceException(it)
-    } ?: ""
+    }
     val index = elementNames.indexOfFirst {
-      it.name == name && namespaceUri == it.namespace
+      it.name == name && it.namespaceUri == namespaceUri
     }
     return if (index > -1) index else UNKNOWN_NAME
   }

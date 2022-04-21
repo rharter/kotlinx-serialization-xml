@@ -46,7 +46,8 @@ class XmlDecoderTest {
   data class NamespacedGreetings(
     @SerialName("greeting")
     val myGreeting: MyGreeting,
-    @XmlName("greeting", "http://greetings.example.com/schema")
+    @XmlName("greeting")
+    @XmlNamespace("http://greetings.example.com/schema")
     val otherGreeting: OtherGreeting,
   )
 
@@ -55,7 +56,6 @@ class XmlDecoderTest {
 
   @Serializable
   data class OtherGreeting(@XmlContent val message: String)
-
 
   @Test fun withElementNamespaces() {
     val xml = """
@@ -86,17 +86,43 @@ class XmlDecoderTest {
     }
   }
 
-  @Test fun withAttributeNamespaces() {
+  @Serializable
+  data class Attributes(
+    val unannotated: String,
+    @XmlAttribute
+    val unnamed: String,
+    @XmlAttribute
+    @XmlName("namedAttribute")
+    val named: String,
+    @XmlAttribute
+    @XmlName("namedNamespaced")
+    @XmlNamespace("http://greetings.example.com/schema")
+    val namedAndNamespaced: String,
+    @XmlAttribute
+    @XmlNamespace("http://greetings.example.com/schema")
+    val namespaced: String,
+    @XmlNamespace("http://greetings.example.com/schema")
+    val onlyNamespaced: String,
+  )
+
+  @Test fun attributeNamespaces() {
     val xml = """
-      <NamespacedGreetings xmlns:other="http://greetings.example.com/schema">
-        <greeting>No namespaces here!</greeting>
-        <other:greeting>Who is this?</other:greeting>
-      </NamespacedGreetings>
+      <Attributes xmlns:ns="http://greetings.example.com/schema"
+        unannotated="first"
+        unnamed="second"
+        namedAttribute="third"
+        ns:namedNamespaced="fourth"
+        ns:namespaced="fifth"
+        ns:onlyNamespaced="sixth" />
     """.trimIndent()
-    val actual = default.decodeFromString<NamespacedGreetings>(xml)
-    assertEquals(NamespacedGreetings(
-      MyGreeting("No namespaces here!"),
-      OtherGreeting("Who is this?"),
+    val actual = default.decodeFromString<Attributes>(xml)
+    assertEquals(Attributes(
+      "first",
+      "second",
+      "third",
+      "fourth",
+      "fifth",
+      "sixth",
     ), actual)
   }
 

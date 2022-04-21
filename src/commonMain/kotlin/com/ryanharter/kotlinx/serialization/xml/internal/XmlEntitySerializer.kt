@@ -2,11 +2,10 @@
 
 package com.ryanharter.kotlinx.serialization.xml.internal
 
-import com.ryanharter.kotlinx.serialization.xml.XmlAttribute
 import com.ryanharter.kotlinx.serialization.xml.XmlDecoder
 import com.ryanharter.kotlinx.serialization.xml.XmlEncoder
 import com.ryanharter.kotlinx.serialization.xml.XmlEntity
-import com.ryanharter.kotlinx.serialization.xml.XmlValue
+import com.ryanharter.kotlinx.serialization.xml.XmlEntity.Value
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
@@ -31,8 +30,8 @@ internal object XmlEntitySerializer : KSerializer<XmlEntity> {
   override fun serialize(encoder: Encoder, value: XmlEntity) {
     verify(encoder)
     when (value) {
-      is XmlAttribute -> encoder.encodeSerializableValue(XmlAttributeSerializer, value)
-      is XmlValue -> encoder.encodeSerializableValue(XmlValueSerializer, value)
+      is XmlEntity.Attribute -> encoder.encodeSerializableValue(XmlAttributeSerializer, value)
+      is XmlEntity.Value -> encoder.encodeSerializableValue(XmlValueSerializer, value)
     }
   }
 
@@ -43,37 +42,37 @@ internal object XmlEntitySerializer : KSerializer<XmlEntity> {
 
 }
 
-@Serializer(forClass = XmlAttribute::class)
+@Serializer(forClass = XmlEntity.Attribute::class)
 @PublishedApi
-internal object XmlAttributeSerializer : KSerializer<XmlAttribute> {
+internal object XmlAttributeSerializer : KSerializer<XmlEntity.Attribute> {
   override val descriptor: SerialDescriptor =
-    PrimitiveSerialDescriptor("com.ryanharter.kotlinx.serialization.xml.XmlAttribute", PrimitiveKind.STRING)
+    PrimitiveSerialDescriptor("com.ryanharter.kotlinx.serialization.xml.XmlEntity.XmlAttribute", PrimitiveKind.STRING)
 
-  override fun serialize(encoder: Encoder, value: XmlAttribute) {
+  override fun serialize(encoder: Encoder, value: XmlEntity.Attribute) {
     verify(encoder)
     PairSerializer(String.serializer(), String.serializer()).serialize(encoder, value.name to value.value)
   }
 
-  override fun deserialize(decoder: Decoder): XmlAttribute {
+  override fun deserialize(decoder: Decoder): XmlEntity.Attribute {
     val result = decoder.asXmlDecoder().decodeXmlEntity()
-    if (result !is XmlAttribute) throw IllegalArgumentException("Unexpected XML entity, expected XmlAttribute, got ${result::class}")
+    if (result !is XmlEntity.Attribute) throw IllegalArgumentException("Unexpected XML entity, expected XmlAttribute, got ${result::class}")
     return result
   }
 
 }
 
-private object XmlValueSerializer : KSerializer<XmlValue> {
+private object XmlValueSerializer : KSerializer<Value> {
   override val descriptor: SerialDescriptor =
     PrimitiveSerialDescriptor("com.ryanharter.kotlinx.serialization.xml.XmlValue", PrimitiveKind.STRING)
 
-  override fun serialize(encoder: Encoder, value: XmlValue) {
+  override fun serialize(encoder: Encoder, value: Value) {
     verify(encoder)
     encoder.encodeString(value.value)
   }
 
-  override fun deserialize(decoder: Decoder): XmlValue {
+  override fun deserialize(decoder: Decoder): Value {
     val result = decoder.asXmlDecoder().decodeXmlEntity()
-    if (result !is XmlValue) throw IllegalArgumentException("Unexpected XML entity, expected XmlValue, got ${result::class}")
+    if (result !is Value) throw IllegalArgumentException("Unexpected XML entity, expected XmlValue, got ${result::class}")
     return result
   }
 
