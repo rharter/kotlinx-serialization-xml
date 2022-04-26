@@ -15,7 +15,7 @@ public annotation class XmlName(public val name: String = "")
 
 @ExperimentalSerializationApi
 @SerialInfo
-@Target(AnnotationTarget.PROPERTY)
+@Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
 public annotation class XmlNamespace(public val uri: String = "")
 
 @ExperimentalSerializationApi
