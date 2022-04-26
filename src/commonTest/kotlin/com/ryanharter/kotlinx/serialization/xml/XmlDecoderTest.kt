@@ -14,11 +14,8 @@ class XmlDecoderTest {
   @Test fun basicXml() {
     val xml = """
       <Greeting from="Ryan" to="Bill">
-        <message>
-          Hi
-        </message>
+        <message>Hi</message>
       </Greeting>
-      
     """.trimIndent()
     val actual = default.decodeFromString<Greeting>(xml)
     assertEquals(Greeting(
