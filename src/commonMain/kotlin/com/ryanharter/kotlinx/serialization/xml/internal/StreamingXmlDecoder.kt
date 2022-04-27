@@ -16,6 +16,8 @@ import kotlinx.serialization.encoding.CompositeDecoder.Companion.UNKNOWN_NAME
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.modules.SerializersModule
 
+private const val DEFAULT_NAMESPACE = ""
+
 @OptIn(ExperimentalSerializationApi::class)
 internal class XmlElementDecoder(
   private val decoder: StreamingXmlDecoder,
@@ -33,7 +35,7 @@ internal class XmlElementDecoder(
       .filterIsInstance<XmlName>()
       .firstOrNull()
       ?.name ?: descriptor.getElementName(i)
-    val namespace = descriptor.getElementAnnotations(i)
+    val namespace = (descriptor.getElementAnnotations(i) + descriptor.getElementDescriptor(i).annotations)
       .filterIsInstance<XmlNamespace>()
       .firstOrNull()
       ?.uri
@@ -47,6 +49,7 @@ internal class XmlElementDecoder(
     if (lexer.peek() == '<') {
       val startElement = lexer.readNextToken()
       require(startElement is XmlLexer.Token.ElementStart)
+      collectNamespaces()
     }
   }
 
@@ -60,17 +63,36 @@ internal class XmlElementDecoder(
     return if (index > -1) index else UNKNOWN_NAME
   }
 
+  // Copies the lexer to read ahead and collect all namespaces defined in the start element tag.
+  private fun collectNamespaces() {
+    val l = lexer.copy()
+    var t = l.readNextToken()
+    while (t !is XmlLexer.Token.ElementStartEnd && t !is XmlLexer.Token.ElementEnd) {
+      if (t is XmlLexer.Token.AttributeName && (t.namespace == "xmlns" || t.name == "xmlns")) {
+        val localName = if (t.namespace == "xmlns") t.name else DEFAULT_NAMESPACE
+
+        val namespaceUri = l.readNextToken()
+        require(namespaceUri is XmlLexer.Token.AttributeValue)
+        namespaceMap[localName] = namespaceUri.value
+      }
+
+      t = l.readNextToken()
+    }
+  }
+
   override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
     while (true) {
       when (val token = lexer.readNextToken()) {
         is XmlLexer.Token.ElementStartEnd -> continue
         is XmlLexer.Token.ElementEnd -> return DECODE_DONE
-        is XmlLexer.Token.ElementStart -> return getElementIndex(token.name, token.namespace)
+        is XmlLexer.Token.ElementStart -> {
+          collectNamespaces()
+          return getElementIndex(token.name, token.namespace)
+        }
         is XmlLexer.Token.AttributeName -> {
-          if (token.namespace == "xmlns") {
-            val namespaceUri = lexer.readNextToken()
-            require(namespaceUri is XmlLexer.Token.AttributeValue)
-            namespaceMap[token.name] = namespaceUri.value
+          // Namespaces have already been read when we consumed the ElementStart token.
+          if (token.namespace == "xmlns" || token.name == "xmlns") {
+            require(lexer.readNextToken() is XmlLexer.Token.AttributeValue)
             continue
           }
 

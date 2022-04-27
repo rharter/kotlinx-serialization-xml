@@ -2,6 +2,16 @@ package com.ryanharter.kotlinx.serialization.xml.internal
 
 internal class XmlLexer(private val source: String) {
   var position = 0
+
+  private var lastToken: Token = Token.None
+
+  fun copy(): XmlLexer {
+    val other = XmlLexer(source)
+    other.position = position
+    other.lastToken = lastToken
+    return other
+  }
+
   fun next(): Char? = if (position < source.length) source[position++] else null
   fun peek(): Char? = if (position < source.length) source[position] else null
   fun skipToChar(char: Char) {
@@ -112,8 +122,6 @@ internal class XmlLexer(private val source: String) {
     }
     return text.toString().trim()
   }
-
-  private var lastToken: Token = Token.None
 
   fun readNextToken(): Token {
     when (lastToken) {

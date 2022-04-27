@@ -123,6 +123,59 @@ class XmlDecoderTest {
     ), actual)
   }
 
+  @Test fun namespacedAttributeBeforeNamespaceDecl() {
+    val xml = """
+      <Attributes
+        unannotated="first"
+        unnamed="second"
+        namedAttribute="third"
+        ns:namedNamespaced="fourth"
+        ns:namespaced="fifth"
+        ns:onlyNamespaced="sixth" 
+        xmlns:ns="http://greetings.example.com/schema" />
+    """.trimIndent()
+    val actual = default.decodeFromString<Attributes>(xml)
+    assertEquals(Attributes(
+      "first",
+      "second",
+      "third",
+      "fourth",
+      "fifth",
+      "sixth",
+    ), actual)
+  }
+
+  @Serializable
+  @XmlNamespace("http://etherx.jabber.org/streams")
+  data class Stream(val from: String, val to: String)
+
+  @Test fun namespacedElementContainingNamespaceDecl() {
+    val xml = """
+      <stream:stream
+        from="source@xmpp.org"
+        to="dest@xmpp.org"
+        xmlns:stream="http://etherx.jabber.org/streams"/>
+    """.trimIndent()
+    val actual = default.decodeFromString<Stream>(xml)
+    assertEquals(Stream(from = "source@xmpp.org", to = "dest@xmpp.org"), actual)
+  }
+
+  @Serializable
+  data class StreamHolder(val stream: Stream)
+
+  @Test fun embeddedNamespacedElementContainingNamespaceDecl() {
+    val xml = """
+      <StreamHolder>
+        <stream:stream
+          from="source@xmpp.org"
+          to="dest@xmpp.org"
+          xmlns:stream="http://etherx.jabber.org/streams"/>
+      </StreamHolder>
+    """.trimIndent()
+    val actual = default.decodeFromString<StreamHolder>(xml)
+    assertEquals(StreamHolder(Stream(from = "source@xmpp.org", to = "dest@xmpp.org")), actual)
+  }
+
   @Test fun skipsComments() {
     val xml = """
       <!-- This is some fiiine XML! -->
