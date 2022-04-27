@@ -11,8 +11,8 @@ import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
 
-interface XmlChild {
-  fun write(output: StringBuilder)
+public interface XmlChild {
+  public fun write(output: StringBuilder)
 }
 
 internal data class XmlContentValue(
@@ -202,7 +202,7 @@ internal class XmlElementEncoder(
   }
 }
 
-class StreamingXmlEncoder(
+public class StreamingXmlEncoder(
   private val result: StringBuilder,
   override val xml: Xml
 ) : XmlEncoder {
