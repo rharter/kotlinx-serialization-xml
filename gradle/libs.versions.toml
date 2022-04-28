@@ -1,0 +1,7 @@
+[versions]
+kotlin = "1.6.21"
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+mavenPublish = { id = "com.vanniktech.maven.publish.base", version = "0.19.0" }

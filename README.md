@@ -2,7 +2,7 @@
 
 A fully native, multiplatform XML format add-on for [Kotlin Serialization](https://github.com/Kotlin/kotlinx.serialization).
 
-> **Status: This project is in the early stages of development, so isn't yet feature complete.**
+> **Status**: This project is in the early stages of development, so isn't yet feature complete.
 
 ## Usage
 
@@ -37,7 +37,18 @@ property, annotated with `@XmlContent`.
 
 ## Installation
 
-Snapshots coming soon.
+Development versions are available in Sonatype's snapshot repository.
+
+```kotlin
+repositories {
+  maven {
+    url("https://oss.sonatype.org/content/repositories/snapshots/")
+  }
+}
+dependencies {
+  implementation("com.ryanharter.kotlinx.serialization:kotlinx-serialization-xml:0.0.1-SNAPSHOT")
+}
+```
 
 # License
 

@@ -1,6 +1,10 @@
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.SonatypeHost.DEFAULT
+
 plugins {
-    kotlin("multiplatform") version "1.6.21"
-    kotlin("plugin.serialization") version "1.6.21"
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.mavenPublish)
 }
 
 group = "com.ryanharter.kotlinx.serialization"
@@ -52,5 +56,35 @@ kotlin {
         val jsTest by getting
         val nativeMain by getting
         val nativeTest by getting
+    }
+}
+
+mavenPublishing {
+    configure(KotlinMultiplatform())
+
+    publishToMavenCentral(DEFAULT)
+    signAllPublications()
+    pom {
+        description.set("A fully native, multiplatform XML format add-on for Kotlin Serialization.")
+        name.set(project.name)
+        url.set("https://github.com/rharter/kotlinx-serialization-xml/")
+        licenses {
+            license {
+                name.set("The Apache Software License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
+            }
+        }
+        scm {
+            url.set("https://github.com/rharter/kotlinx-serialization-xml/")
+            connection.set("scm:git:git://github.com/rharter/kotlinx-serialization-xml.git")
+            developerConnection.set("scm:git:ssh://git@github.com/rharter/kotlinx-serialization-xml.git")
+        }
+        developers {
+            developer {
+                id.set("rharter")
+                name.set("Ryan Harter")
+            }
+        }
     }
 }
