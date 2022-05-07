@@ -19,8 +19,9 @@ public sealed interface XmlEntity {
   ) : ContentEntity
 
   public data class Attribute(
-    val name: String,
-    val value: String,
+    public val name: String,
+    public val value: String,
+    public val prefix: String? = null
   ) : XmlEntity
 
   public data class Comment(

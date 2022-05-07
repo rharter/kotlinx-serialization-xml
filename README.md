@@ -6,19 +6,19 @@ A fully native, multiplatform XML format add-on for [Kotlin Serialization](https
 
 ## Usage
 
-Kotlin Serialization XML provides an `Xml` format for Kotlin Serialization, allowing you to use the 
+Kotlin Serialization XML provides an `Xml` format for Kotlin Serialization, allowing you to use the
 standard `@Serializable` annotation to create reflectionless, multiplatform serializers for your Kotlin
 classes.
 
 ```kotlin
 @Serializable
 data class Greeting(
-  val from: String,
-  val to: String,
+  @XmlAttribute val from: String,
+  @XmlAttribute val to: String,
   val message: Message
 )
 
-@Serializable 
+@Serializable
 data class Message(
   @XmlContent val content: String
 )
@@ -31,9 +31,13 @@ val xml = """
 val actual = Xml.Default.decodeFromString<Greeting>(xml)
 ```
 
-By default, primitive (and `String`) properties of an object are expected to be Xml attributes, while
-complex objects are expected to be nested Xml elements. Each object can have a single text content 
-property, annotated with `@XmlContent`.
+By default, all properties are encoded as nested XML elements.
+
+To encode properties as attributes, they must be annotated with `@XmlAttribute`. All `@XmlAttribute`
+annotated properties must come before other properties in an object.
+
+After the attributes, properties will be encoded as nested elements, but can also be encoded as
+bare string content by annotating the property with `@XmlContent`.
 
 ## Installation
 

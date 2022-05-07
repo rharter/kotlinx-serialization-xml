@@ -2,6 +2,7 @@ package com.ryanharter.kotlinx.serialization.xml
 
 import com.ryanharter.kotlinx.serialization.xml.internal.StreamingXmlDecoder
 import com.ryanharter.kotlinx.serialization.xml.internal.StreamingXmlEncoder
+import com.ryanharter.kotlinx.serialization.xml.internal.XmlComposer
 import com.ryanharter.kotlinx.serialization.xml.internal.XmlLexer
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy
@@ -18,13 +19,11 @@ public sealed class Xml(
   public companion object Default : Xml(EmptySerializersModule)
 
   override fun <T> encodeToString(serializer: SerializationStrategy<T>, value: T): String {
-    val result = StringBuilder()
-    val encoder = StreamingXmlEncoder(
-      result,
-      this,
-    )
-    encoder.encodeSerializableValue(serializer, value)
-    return encoder.toString()
+    val sb = StringBuilder()
+    val composer = XmlComposer(sb)
+    val encoder = StreamingXmlEncoder(this, composer)
+    serializer.serialize(encoder, value)
+    return sb.toString()
   }
 
   override fun <T> decodeFromString(deserializer: DeserializationStrategy<T>, string: String): T {

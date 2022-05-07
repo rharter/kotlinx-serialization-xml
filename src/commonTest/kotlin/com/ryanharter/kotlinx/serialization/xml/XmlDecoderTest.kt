@@ -11,32 +11,38 @@ class XmlDecoderTest {
 
   private val default = Xml.Default
 
-  @Test fun basicXml() {
+  @Test
+  fun basicXml() {
     val xml = """
       <Greeting from="Ryan" to="Bill">
         <message>Hi</message>
       </Greeting>
     """.trimIndent()
     val actual = default.decodeFromString<Greeting>(xml)
-    assertEquals(Greeting(
-      from = "Ryan",
-      to = "Bill",
-      message = Message("Hi")
-    ), actual)
+    assertEquals(
+      Greeting(
+        from = "Ryan",
+        to = "Bill",
+        message = Message("Hi")
+      ), actual
+    )
   }
 
-  @Test fun xmlWithNestedAttribute() {
+  @Test
+  fun xmlWithNestedAttribute() {
     val xml = """
       <Greeting from="Ryan" to="Bill">
         <message content="Hi"/>
       </Greeting>
     """.trimIndent()
     val actual = default.decodeFromString<Greeting>(xml)
-    assertEquals(Greeting(
-      from = "Ryan",
-      to = "Bill",
-      message = Message("Hi")
-    ), actual)
+    assertEquals(
+      Greeting(
+        from = "Ryan",
+        to = "Bill",
+        message = Message("Hi")
+      ), actual
+    )
   }
 
   @Serializable
@@ -44,7 +50,7 @@ class XmlDecoderTest {
     @SerialName("greeting")
     val myGreeting: MyGreeting,
     @XmlName("greeting")
-    @XmlNamespace("http://greetings.example.com/schema")
+    @XmlNamespace("http://greetings.example.com/schema", "")
     val otherGreeting: OtherGreeting,
   )
 
@@ -54,7 +60,8 @@ class XmlDecoderTest {
   @Serializable
   data class OtherGreeting(@XmlContent val message: String)
 
-  @Test fun withElementNamespaces() {
+  @Test
+  fun withElementNamespaces() {
     val xml = """
       <NamespacedGreetings xmlns:other="http://greetings.example.com/schema">
         <greeting>No namespaces here!</greeting>
@@ -62,13 +69,16 @@ class XmlDecoderTest {
       </NamespacedGreetings>
     """.trimIndent()
     val actual = default.decodeFromString<NamespacedGreetings>(xml)
-    assertEquals(NamespacedGreetings(
-      MyGreeting("No namespaces here!"),
-      OtherGreeting("Who is this?"),
-    ), actual)
+    assertEquals(
+      NamespacedGreetings(
+        MyGreeting("No namespaces here!"),
+        OtherGreeting("Who is this?"),
+      ), actual
+    )
   }
 
-  @Test fun undefinedNamespaces() {
+  @Test
+  fun undefinedNamespaces() {
     val xml = """
       <NamespacedGreetings>
         <greeting>No namespaces here!</greeting>
@@ -93,16 +103,17 @@ class XmlDecoderTest {
     val named: String,
     @XmlAttribute
     @XmlName("namedNamespaced")
-    @XmlNamespace("http://greetings.example.com/schema")
+    @XmlNamespace("http://greetings.example.com/schema", "")
     val namedAndNamespaced: String,
     @XmlAttribute
-    @XmlNamespace("http://greetings.example.com/schema")
+    @XmlNamespace("http://greetings.example.com/schema", "")
     val namespaced: String,
-    @XmlNamespace("http://greetings.example.com/schema")
+    @XmlNamespace("http://greetings.example.com/schema", "")
     val onlyNamespaced: String,
   )
 
-  @Test fun attributeNamespaces() {
+  @Test
+  fun attributeNamespaces() {
     val xml = """
       <Attributes xmlns:ns="http://greetings.example.com/schema"
         unannotated="first"
@@ -113,17 +124,20 @@ class XmlDecoderTest {
         ns:onlyNamespaced="sixth" />
     """.trimIndent()
     val actual = default.decodeFromString<Attributes>(xml)
-    assertEquals(Attributes(
-      "first",
-      "second",
-      "third",
-      "fourth",
-      "fifth",
-      "sixth",
-    ), actual)
+    assertEquals(
+      Attributes(
+        "first",
+        "second",
+        "third",
+        "fourth",
+        "fifth",
+        "sixth",
+      ), actual
+    )
   }
 
-  @Test fun namespacedAttributeBeforeNamespaceDecl() {
+  @Test
+  fun namespacedAttributeBeforeNamespaceDecl() {
     val xml = """
       <Attributes
         unannotated="first"
@@ -131,25 +145,28 @@ class XmlDecoderTest {
         namedAttribute="third"
         ns:namedNamespaced="fourth"
         ns:namespaced="fifth"
-        ns:onlyNamespaced="sixth" 
+        ns:onlyNamespaced="sixth"
         xmlns:ns="http://greetings.example.com/schema" />
     """.trimIndent()
     val actual = default.decodeFromString<Attributes>(xml)
-    assertEquals(Attributes(
-      "first",
-      "second",
-      "third",
-      "fourth",
-      "fifth",
-      "sixth",
-    ), actual)
+    assertEquals(
+      Attributes(
+        "first",
+        "second",
+        "third",
+        "fourth",
+        "fifth",
+        "sixth",
+      ), actual
+    )
   }
 
   @Serializable
-  @XmlNamespace("http://etherx.jabber.org/streams")
+  @XmlNamespace("http://etherx.jabber.org/streams", "")
   data class Stream(val from: String, val to: String)
 
-  @Test fun namespacedElementContainingNamespaceDecl() {
+  @Test
+  fun namespacedElementContainingNamespaceDecl() {
     val xml = """
       <stream:stream
         from="source@xmpp.org"
@@ -163,7 +180,8 @@ class XmlDecoderTest {
   @Serializable
   data class StreamHolder(val stream: Stream)
 
-  @Test fun embeddedNamespacedElementContainingNamespaceDecl() {
+  @Test
+  fun embeddedNamespacedElementContainingNamespaceDecl() {
     val xml = """
       <StreamHolder>
         <stream:stream
@@ -176,7 +194,8 @@ class XmlDecoderTest {
     assertEquals(StreamHolder(Stream(from = "source@xmpp.org", to = "dest@xmpp.org")), actual)
   }
 
-  @Test fun skipsComments() {
+  @Test
+  fun skipsComments() {
     val xml = """
       <!-- This is some fiiine XML! -->
       <Greeting from="Ryan" to="Bill">
@@ -185,14 +204,17 @@ class XmlDecoderTest {
       </Greeting>
     """.trimIndent()
     val actual = default.decodeFromString<Greeting>(xml)
-    assertEquals(Greeting(
-      from = "Ryan",
-      to = "Bill",
-      message = Message("Hi")
-    ), actual)
+    assertEquals(
+      Greeting(
+        from = "Ryan",
+        to = "Bill",
+        message = Message("Hi")
+      ), actual
+    )
   }
 
-  @Test fun skipsXmlDecl() {
+  @Test
+  fun skipsXmlDecl() {
     val xml = """
       <?xml version="1.1"?>
       <Greeting from="Ryan" to="Bill">
@@ -200,10 +222,12 @@ class XmlDecoderTest {
       </Greeting>
     """.trimIndent()
     val actual = default.decodeFromString<Greeting>(xml)
-    assertEquals(Greeting(
-      from = "Ryan",
-      to = "Bill",
-      message = Message("Hi")
-    ), actual)
+    assertEquals(
+      Greeting(
+        from = "Ryan",
+        to = "Bill",
+        message = Message("Hi")
+      ), actual
+    )
   }
 }

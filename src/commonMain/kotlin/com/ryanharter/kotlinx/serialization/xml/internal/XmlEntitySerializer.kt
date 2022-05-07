@@ -46,11 +46,17 @@ internal object XmlEntitySerializer : KSerializer<XmlEntity> {
 @PublishedApi
 internal object XmlAttributeSerializer : KSerializer<XmlEntity.Attribute> {
   override val descriptor: SerialDescriptor =
-    PrimitiveSerialDescriptor("com.ryanharter.kotlinx.serialization.xml.XmlEntity.XmlAttribute", PrimitiveKind.STRING)
+    PrimitiveSerialDescriptor(
+      "com.ryanharter.kotlinx.serialization.xml.XmlEntity.XmlAttribute",
+      PrimitiveKind.STRING
+    )
 
   override fun serialize(encoder: Encoder, value: XmlEntity.Attribute) {
     verify(encoder)
-    PairSerializer(String.serializer(), String.serializer()).serialize(encoder, value.name to value.value)
+    PairSerializer(String.serializer(), String.serializer()).serialize(
+      encoder,
+      value.name to value.value
+    )
   }
 
   override fun deserialize(decoder: Decoder): XmlEntity.Attribute {
@@ -63,7 +69,10 @@ internal object XmlAttributeSerializer : KSerializer<XmlEntity.Attribute> {
 
 private object XmlValueSerializer : KSerializer<Value> {
   override val descriptor: SerialDescriptor =
-    PrimitiveSerialDescriptor("com.ryanharter.kotlinx.serialization.xml.XmlValue", PrimitiveKind.STRING)
+    PrimitiveSerialDescriptor(
+      "com.ryanharter.kotlinx.serialization.xml.XmlValue",
+      PrimitiveKind.STRING
+    )
 
   override fun serialize(encoder: Encoder, value: Value) {
     verify(encoder)
@@ -89,11 +98,11 @@ private fun verify(encoder: Encoder) {
 internal fun Decoder.asXmlDecoder() = this as? XmlDecoder
   ?: throw IllegalStateException(
     "This serializer can be used only with Xml format. " +
-        "Expected Decoder to be XmlDecoder, got ${this::class}"
+      "Expected Decoder to be XmlDecoder, got ${this::class}"
   )
 
 internal fun Encoder.asXmlEncoder() = this as? XmlEncoder
   ?: throw IllegalStateException(
     "This serializer can be used only with Xml format. " +
-        "Expected Encoder to be XmlEncoder, got ${this::class}"
+      "Expected Encoder to be XmlEncoder, got ${this::class}"
   )

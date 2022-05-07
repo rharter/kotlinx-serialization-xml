@@ -23,6 +23,7 @@ internal class XmlLexer(private val source: String) {
       }
     }
   }
+
   fun skipWhitespace() {
     var c = peek()
     while (c != null) {
@@ -35,6 +36,7 @@ internal class XmlLexer(private val source: String) {
       }
     }
   }
+
   fun requireChar(char: Char) {
     skipWhitespace()
     require(peek() != null) { "Unexpected end of file" }
