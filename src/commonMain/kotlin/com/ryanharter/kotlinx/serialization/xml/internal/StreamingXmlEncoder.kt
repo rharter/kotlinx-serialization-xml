@@ -3,6 +3,7 @@ package com.ryanharter.kotlinx.serialization.xml.internal
 import com.ryanharter.kotlinx.serialization.xml.Xml
 import com.ryanharter.kotlinx.serialization.xml.XmlAttribute
 import com.ryanharter.kotlinx.serialization.xml.XmlContent
+import com.ryanharter.kotlinx.serialization.xml.XmlDefaultNamespace
 import com.ryanharter.kotlinx.serialization.xml.XmlEncoder
 import com.ryanharter.kotlinx.serialization.xml.XmlEntity
 import com.ryanharter.kotlinx.serialization.xml.XmlNamespace
@@ -31,7 +32,7 @@ internal class StreamingXmlEncoder(
     // Get the namespace of the element
     val namespace = descriptor.annotations
       .filterIsInstance<XmlNamespace>()
-      .firstOrNull()
+      .firstOrNull { it.localName.isNotBlank() }
       ?.let { namespaces[it.uri] ?: it }
 
     if (namespace != null && namespace.localName.isNotBlank()) {
@@ -42,6 +43,12 @@ internal class StreamingXmlEncoder(
     // We only define the namespace if it isn't already in scope
     if (namespace != null && !namespaces.contains(namespace.uri)) {
       composer.newAttribute().append(namespace)
+    }
+
+    // Check for a default namespace
+    val defaultNamespace = descriptor.annotations.filterIsInstance<XmlDefaultNamespace>().firstOrNull()
+    if (defaultNamespace != null) {
+      composer.newAttribute().append(defaultNamespace)
     }
 
     // Collect all new child namespaces
@@ -77,6 +84,12 @@ internal class StreamingXmlEncoder(
       append(":").append(namespace.localName)
     }
     append("=")
+    encodeString(namespace.uri)
+    return this
+  }
+
+  private fun Composer.append(namespace: XmlDefaultNamespace): Composer {
+    append("xmlns").append("=")
     encodeString(namespace.uri)
     return this
   }

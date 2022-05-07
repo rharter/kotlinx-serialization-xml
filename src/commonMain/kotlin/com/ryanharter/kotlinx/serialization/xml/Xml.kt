@@ -5,6 +5,7 @@ import com.ryanharter.kotlinx.serialization.xml.internal.StreamingXmlEncoder
 import com.ryanharter.kotlinx.serialization.xml.internal.XmlComposer
 import com.ryanharter.kotlinx.serialization.xml.internal.XmlLexer
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.EmptySerializersModule
@@ -15,6 +16,7 @@ public sealed class Xml(
   override val serializersModule: SerializersModule,
 ) : StringFormat {
 
+  @ExperimentalSerializationApi
   @ThreadLocal
   public companion object Default : Xml(EmptySerializersModule)
 

@@ -95,4 +95,22 @@ class XmlEncoderTest {
       """<ContentAsText first="one" second="two">three<fourth>four</fourth></ContentAsText>"""
     assertEquals(expected, actual)
   }
+
+  @Test
+  fun encodesMultipleNamespaces() {
+    @Serializable
+    @SerialName("stream")
+    @XmlNamespace("http://etherx.jabber.org/streams", "stream")
+    @XmlDefaultNamespace("jabber:client")
+    data class Stream(
+      @XmlAttribute val from: String = "me@jabber.im",
+      @XmlAttribute val to: String = "jabber.im",
+      @XmlAttribute val version: String = "1.0",
+      @XmlAttribute val lang: String = "en",
+    )
+
+    val actual = default.encodeToString(Stream())
+    val expected = """<stream:stream xmlns:stream="http://etherx.jabber.org/streams" xmlns="jabber:client" from="me@jabber.im" to="jabber.im" version="1.0" lang="en"/>"""
+    assertEquals(expected, actual)
+  }
 }

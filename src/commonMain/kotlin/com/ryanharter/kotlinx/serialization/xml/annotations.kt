@@ -27,6 +27,7 @@ public annotation class XmlDefaultNamespace(
 @ExperimentalSerializationApi
 @SerialInfo
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
+@Repeatable
 public annotation class XmlNamespace(
   /**
    * A namespace name, identified by a URI.
