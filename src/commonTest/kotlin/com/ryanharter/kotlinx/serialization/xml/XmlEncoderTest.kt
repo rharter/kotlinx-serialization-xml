@@ -46,7 +46,7 @@ class XmlEncoderTest {
   fun defaultNamespaces() {
     @Serializable
     @SerialName("DefaultNamespace")
-    @XmlNamespace("http://example.com/entity", "")
+    @XmlDefaultNamespace("http://example.com/entity")
     data class DefaultNamespace(
       @XmlAttribute val foo: String = "fooz",
       @XmlAttribute val bar: String = "barz",
@@ -97,7 +97,7 @@ class XmlEncoderTest {
   }
 
   @Test
-  fun encodesMultipleNamespaces() {
+  fun encodesDefaultNamespaces() {
     @Serializable
     @SerialName("stream")
     @XmlNamespace("http://etherx.jabber.org/streams", "stream")
