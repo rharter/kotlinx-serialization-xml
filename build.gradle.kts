@@ -42,7 +42,7 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
-        api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.3")
+        api(libs.kotlinx.serialization)
       }
     }
     val commonTest by getting {
