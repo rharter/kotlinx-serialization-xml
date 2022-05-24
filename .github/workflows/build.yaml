@@ -13,6 +13,8 @@ env:
 
 jobs:
   build:
+    # We run on a Mac because it can cross-compile the Kotlin/Native Linux and Windows binaries
+    # while also being required for the macOS/iOS/watchOS/tvOS binaries.
     runs-on: macos-11
 
     steps:

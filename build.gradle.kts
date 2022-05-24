@@ -1,5 +1,8 @@
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.SonatypeHost.DEFAULT
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
@@ -29,15 +32,28 @@ kotlin {
   js {
     nodejs()
   }
-  val hostOs = System.getProperty("os.name")
-  val isMingwX64 = hostOs.startsWith("Windows")
-  val nativeTarget = when {
-    hostOs == "Mac OS X" -> macosX64("native")
-    hostOs == "Linux" -> linuxX64("native")
-    isMingwX64 -> mingwX64("native")
-    else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-  }
 
+  // Note: Keep native list in sync with kotlinx.serialization:
+  // https://github.com/Kotlin/kotlinx.serialization/blob/master/gradle/native-targets.gradle
+  linuxX64()
+  linuxArm32Hfp()
+  linuxArm64()
+  macosX64()
+  macosArm64()
+  mingwX86()
+  mingwX64()
+  iosX64()
+  iosArm32()
+  iosArm64()
+  iosSimulatorArm64()
+  watchosX86()
+  watchosX64()
+  watchosArm32()
+  watchosArm64()
+  watchosSimulatorArm64()
+  tvosX64()
+  tvosArm64()
+  tvosSimulatorArm64()
 
   sourceSets {
     val commonMain by getting {
@@ -50,12 +66,20 @@ kotlin {
         implementation(kotlin("test"))
       }
     }
-    val jvmMain by getting
-    val jvmTest by getting
-    val jsMain by getting
-    val jsTest by getting
-    val nativeMain by getting
-    val nativeTest by getting
+  }
+
+  // Add a test binary and execution for native targets which runs on a background thread.
+  targets.withType(KotlinNativeTargetWithTests::class).all {
+    binaries {
+      test("background", listOf(NativeBuildType.DEBUG)) {
+        freeCompilerArgs += listOf("-trw")
+      }
+    }
+    testRuns {
+      create("background") {
+        setExecutionSourceFrom(binaries.getByName("backgroundDebugTest") as TestExecutable)
+      }
+    }
   }
 }
 
