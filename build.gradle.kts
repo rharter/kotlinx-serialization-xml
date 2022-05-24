@@ -1,5 +1,8 @@
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.SonatypeHost.DEFAULT
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTargetWithTests
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+import org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
@@ -61,6 +64,20 @@ kotlin {
     val commonTest by getting {
       dependencies {
         implementation(kotlin("test"))
+      }
+    }
+  }
+
+  // Add a test binary and execution for native targets which runs on a background thread.
+  targets.withType(KotlinNativeTargetWithTests::class).all {
+    binaries {
+      test("background", listOf(NativeBuildType.DEBUG)) {
+        freeCompilerArgs += listOf("-trw")
+      }
+    }
+    testRuns {
+      create("background") {
+        setExecutionSourceFrom(binaries.getByName("backgroundDebugTest") as TestExecutable)
       }
     }
   }
