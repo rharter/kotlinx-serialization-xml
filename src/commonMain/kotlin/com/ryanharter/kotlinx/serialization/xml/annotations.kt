@@ -26,7 +26,7 @@ public annotation class XmlDefaultNamespace(
 
 @ExperimentalSerializationApi
 @SerialInfo
-@Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS, AnnotationTarget.TYPE)
 @Repeatable
 public annotation class XmlNamespace(
   /**

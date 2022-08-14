@@ -235,11 +235,26 @@ class XmlDecoderTest {
   fun readsBooleanPresenceAsTrue() {
     @Serializable
     data class Data(
-      val required: Boolean = true
+      val required: Boolean = true,
     )
 
     val xml = """
       <data><required/></data>
+    """.trimIndent()
+    val actual = default.decodeFromString<Data>(xml)
+    assertEquals(Data(true), actual)
+  }
+
+  @Test
+  fun readsBooleanAttributePresenceAsTrue() {
+    @Serializable
+    data class Data(
+      @XmlAttribute val required: Boolean = true,
+      @XmlAttribute val snakeCount: Int = 4,
+    )
+
+    val xml = """
+      <date required snakeCount="4"/>
     """.trimIndent()
     val actual = default.decodeFromString<Data>(xml)
     assertEquals(Data(true), actual)
