@@ -185,6 +185,8 @@ internal class XmlLexer(private val source: String) {
         }
       }
       is Token.AttributeName -> {
+        skipWhitespace()
+        return when
         return Token.AttributeValue(readAttributeValue()).also { lastToken = it }
       }
     }
