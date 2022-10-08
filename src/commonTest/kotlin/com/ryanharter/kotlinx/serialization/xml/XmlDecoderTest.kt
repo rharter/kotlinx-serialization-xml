@@ -249,7 +249,7 @@ class XmlDecoderTest {
   fun readsBooleanAttributePresenceAsTrue() {
     @Serializable
     data class Data(
-      @XmlAttribute val required: Boolean = true,
+      @XmlAttribute val required: Boolean = false,
       @XmlAttribute val snakeCount: Int = 4,
     )
 

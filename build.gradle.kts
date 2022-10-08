@@ -68,6 +68,12 @@ kotlin {
     }
   }
 
+  sourceSets.all {
+    languageSettings {
+      optIn("kotlinx.serialization.ExperimentalSerializationApi")
+    }
+  }
+
   // Add a test binary and execution for native targets which runs on a background thread.
   targets.withType(KotlinNativeTargetWithTests::class).all {
     binaries {

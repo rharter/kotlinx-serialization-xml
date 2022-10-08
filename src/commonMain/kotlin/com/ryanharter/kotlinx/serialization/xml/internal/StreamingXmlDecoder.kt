@@ -119,8 +119,8 @@ internal class XmlElementDecoder(
     return when (val t = lexer.readNextToken()) {
       is XmlLexer.Token.AttributeValue -> t.value.toBoolean()
       is XmlLexer.Token.Text -> t.content.toBoolean()
-      // If the element ends immediately, it's presence makes it true
-      is XmlLexer.Token.ElementEnd -> true
+      // If the element or attribute ends immediately, it's presence makes it true
+      is XmlLexer.Token.ElementEnd, is XmlLexer.Token.AttributeEnd -> true
       else -> throw IllegalArgumentException("Invalid boolean value")
     }
   }
@@ -244,7 +244,7 @@ internal class StreamingXmlDecoder(
   }
 
   @ExperimentalSerializationApi
-  override fun decodeInline(inlineDescriptor: SerialDescriptor): Decoder {
+  override fun decodeInline(descriptor: SerialDescriptor): Decoder {
     TODO("Not yet implemented")
   }
 

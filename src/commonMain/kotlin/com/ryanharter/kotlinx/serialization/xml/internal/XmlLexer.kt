@@ -50,7 +50,7 @@ internal class XmlLexer(private val source: String) {
     var start = position
     var namespace: String? = null
     while (true) {
-      when (val c = next()) {
+      when (next()) {
         null -> throw IllegalArgumentException("Unexpected end of file")
         ':' -> {
           namespace = source.substring(start, position - 1)
@@ -68,16 +68,17 @@ internal class XmlLexer(private val source: String) {
     var start = position
     var namespace: String? = null
     while (true) {
-      when (next()) {
+      when (peek()) {
         null -> throw IllegalArgumentException("Unexpected end of file")
         ':' -> {
-          namespace = source.substring(start, position - 1)
+          namespace = source.substring(start, position++)
           start = position
         }
         '\r', '\t', '\n', ' ', '=' -> break
+        else -> position++
       }
     }
-    val name = source.substring(start, position - 1)
+    val name = source.substring(start, position)
     return QualifiedName(name, namespace)
   }
 
@@ -165,7 +166,7 @@ internal class XmlLexer(private val source: String) {
           }
         }
       }
-      is Token.ElementStart, is Token.AttributeValue -> {
+      is Token.ElementStart, is Token.AttributeValue, is Token.AttributeEnd -> {
         while (true) {
           skipWhitespace()
           return when (peek()) {
@@ -186,8 +187,12 @@ internal class XmlLexer(private val source: String) {
       }
       is Token.AttributeName -> {
         skipWhitespace()
-        return when
-        return Token.AttributeValue(readAttributeValue()).also { lastToken = it }
+        return if (peek() == '=') {
+          position++
+          Token.AttributeValue(readAttributeValue()).also { lastToken = it }
+        } else {
+          Token.AttributeEnd.also { lastToken = it }
+        }
       }
     }
   }
@@ -199,6 +204,7 @@ internal class XmlLexer(private val source: String) {
     data class ElementEnd(val name: String? = null, val namespace: String? = null) : Token
     data class AttributeName(val name: String, val namespace: String? = null) : Token
     data class AttributeValue(val value: String) : Token
+    object AttributeEnd : Token
     data class Text(val content: String) : Token
     object DocumentEnd : Token
   }
