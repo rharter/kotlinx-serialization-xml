@@ -5,6 +5,7 @@ package com.ryanharter.kotlinx.serialization.xml.internal
 import com.ryanharter.kotlinx.serialization.xml.XmlDecoder
 import com.ryanharter.kotlinx.serialization.xml.XmlEncoder
 import com.ryanharter.kotlinx.serialization.xml.XmlEntity
+import com.ryanharter.kotlinx.serialization.xml.XmlEntity.Attribute
 import com.ryanharter.kotlinx.serialization.xml.XmlEntity.Value
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
@@ -30,8 +31,9 @@ internal object XmlEntitySerializer : KSerializer<XmlEntity> {
   override fun serialize(encoder: Encoder, value: XmlEntity) {
     verify(encoder)
     when (value) {
-      is XmlEntity.Attribute -> encoder.encodeSerializableValue(XmlAttributeSerializer, value)
-      is XmlEntity.Value -> encoder.encodeSerializableValue(XmlValueSerializer, value)
+      is Attribute -> encoder.encodeSerializableValue(XmlAttributeSerializer, value)
+      is Value -> encoder.encodeSerializableValue(XmlValueSerializer, value)
+      else -> {} // no op
     }
   }
 
@@ -42,16 +44,16 @@ internal object XmlEntitySerializer : KSerializer<XmlEntity> {
 
 }
 
-@Serializer(forClass = XmlEntity.Attribute::class)
+@Serializer(forClass = Attribute::class)
 @PublishedApi
-internal object XmlAttributeSerializer : KSerializer<XmlEntity.Attribute> {
+internal object XmlAttributeSerializer : KSerializer<Attribute> {
   override val descriptor: SerialDescriptor =
     PrimitiveSerialDescriptor(
       "com.ryanharter.kotlinx.serialization.xml.XmlEntity.XmlAttribute",
       PrimitiveKind.STRING
     )
 
-  override fun serialize(encoder: Encoder, value: XmlEntity.Attribute) {
+  override fun serialize(encoder: Encoder, value: Attribute) {
     verify(encoder)
     PairSerializer(String.serializer(), String.serializer()).serialize(
       encoder,
@@ -59,9 +61,9 @@ internal object XmlAttributeSerializer : KSerializer<XmlEntity.Attribute> {
     )
   }
 
-  override fun deserialize(decoder: Decoder): XmlEntity.Attribute {
+  override fun deserialize(decoder: Decoder): Attribute {
     val result = decoder.asXmlDecoder().decodeXmlEntity()
-    if (result !is XmlEntity.Attribute) throw IllegalArgumentException("Unexpected XML entity, expected XmlAttribute, got ${result::class}")
+    if (result !is Attribute) throw IllegalArgumentException("Unexpected XML entity, expected XmlAttribute, got ${result::class}")
     return result
   }
 

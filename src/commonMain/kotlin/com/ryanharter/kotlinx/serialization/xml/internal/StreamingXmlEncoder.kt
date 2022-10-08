@@ -65,8 +65,8 @@ internal class StreamingXmlEncoder(
       .filterNot { namespaces.contains(it.uri) }
       .associateBy { it.uri }
 
-    newNamespaces.values.forEach { namespace ->
-      composer.newAttribute().append(namespace)
+    newNamespaces.values.forEach { ns ->
+      composer.newAttribute().append(ns)
     }
 
     val childNamespaces = namespaces.toMutableMap()
@@ -193,7 +193,7 @@ internal class StreamingXmlEncoder(
   override fun encodeChar(value: Char): Unit = encodeValue(value)
   override fun encodeString(value: String): Unit = encodeValue(value)
   override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int): Unit = encodeValue(index)
-  override fun encodeInline(inlineDescriptor: SerialDescriptor): Encoder = this
+  override fun encodeInline(descriptor: SerialDescriptor): Encoder = this
 
   // Delegating implementation of CompositeEncoder
   override fun encodeBooleanElement(
