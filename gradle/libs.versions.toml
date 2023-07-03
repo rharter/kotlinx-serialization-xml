@@ -4,7 +4,7 @@ kotlin = "1.8.10"
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-mavenPublish = { id = "com.vanniktech.maven.publish.base", version = "0.22.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish.base", version = "0.25.3" }
 
 [libraries]
 kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1"
