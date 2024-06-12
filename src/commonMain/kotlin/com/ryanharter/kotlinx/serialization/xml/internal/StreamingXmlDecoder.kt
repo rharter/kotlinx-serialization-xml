@@ -45,6 +45,8 @@ internal class XmlElementDecoder(
   override val serializersModule: SerializersModule = decoder.xml.serializersModule
 
   init {
+    // Skip whitespace at the beginning of the file, if any.
+    lexer.skipWhitespace()
     // Consume the start token if it exists.
     if (lexer.peek() == '<') {
       val startElement = lexer.readNextToken()
