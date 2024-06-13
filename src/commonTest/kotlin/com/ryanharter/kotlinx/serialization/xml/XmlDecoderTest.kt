@@ -232,6 +232,24 @@ class XmlDecoderTest {
   }
 
   @Test
+  fun skipsWhitespaceBeforeXml() {
+    val xml = """
+                  <?xml version="1.1"?>
+      <Greeting from="Ryan" to="Bill">
+        <message>Hi</message>
+      </Greeting>
+    """.trimIndent()
+    val actual = default.decodeFromString<Greeting>(xml)
+    assertEquals(
+      Greeting(
+        from = "Ryan",
+        to = "Bill",
+        message = Message("Hi")
+      ), actual
+    )
+  }
+
+  @Test
   fun readsBooleanPresenceAsTrue() {
     @Serializable
     data class Data(
