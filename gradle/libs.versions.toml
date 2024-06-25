@@ -7,4 +7,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 mavenPublish = { id = "com.vanniktech.maven.publish.base", version = "0.22.0" }
 
 [libraries]
-kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1"
+kotlinx-serialization = "org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.1"
